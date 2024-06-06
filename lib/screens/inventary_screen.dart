@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_gestion/data/room.dart';
 import 'package:proyecto_gestion/screens/logout_screen.dart';
 import 'package:proyecto_gestion/screens/welcome_screen.dart';
 import 'package:proyecto_gestion/screens/login_screen.dart';
@@ -26,78 +27,16 @@ class MyApp extends StatelessWidget {
 }
 
 class InventoryScreen extends StatelessWidget {
-  final String roomType;
+  final Room room;
   final bool isEmployee;
-  final String roomNumber;
 
-  const InventoryScreen({
-    super.key,
-    required this.roomType,
-    required this.isEmployee,
-    required this.roomNumber,
-  });
+  const InventoryScreen(
+      {super.key,
+      required this.room,
+      required this.isEmployee,});
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, Map<String, String>> productQuantities = {
-      'Individual': {
-        'Cafetera': '1',
-        'Manteles': '1',
-        'Mantas': '1',
-        'Fundas': '3',
-        'Almohadas': '3',
-        'Sabanas': '2',
-        'Toallas': '4',
-        'Toalla mano': '3',
-        'Tapete bano': '1',
-        'Secador': '1',
-        'Control Rem': '1',
-        'Bata': '1',
-      },
-      'Doble': {
-        'Cafetera': '1',
-        'Manteles': '1',
-        'Mantas': '1',
-        'Fundas': '6',
-        'Almohadas': '6',
-        'Sabanas': '4',
-        'Toallas': '6',
-        'Toalla mano': '3',
-        'Tapete bano': '1',
-        'Secador': '1',
-        'Control Rem': '1',
-        'Bata': '2',
-      },
-      'Familiar': {
-        'Cafetera': '1',
-        'Manteles': '2',
-        'Mantas': '1',
-        'Fundas': '8',
-        'Almohadas': '8',
-        'Sabanas': '6',
-        'Toallas': '8',
-        'Toalla mano': '5',
-        'Tapete bano': '1',
-        'Secador': '1',
-        'Control Rem': '1',
-        'Bata': '5',
-      },
-      'Suite': {
-        'Cafetera': '2',
-        'Manteles': '2',
-        'Mantas': '1',
-        'Fundas': '6',
-        'Almohadas': '6',
-        'Sabanas': '2',
-        'Toallas': '5',
-        'Toalla mano': '3',
-        'Tapete bano': '1',
-        'Secador': '1',
-        'Control Rem': '1',
-        'Bata': '3',
-      },
-    };
-
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
@@ -114,7 +53,7 @@ class InventoryScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Habitación $roomType',
+                'Habitación ${room.type}',
                 style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -122,7 +61,7 @@ class InventoryScreen extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                'Número $roomNumber',
+                'Número ${room.number}',
                 style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -171,18 +110,16 @@ class InventoryScreen extends StatelessWidget {
           const SizedBox(height: 30.0),
           Expanded(
             child: GridView.count(
-              crossAxisCount: 3,
-              children: productQuantities[roomType]?.entries.map((entry) {
-                    return _buildProductCard(
-                      entry.key,
-                      'assets/${entry.key}.png',
-                      entry.value,
-                      context,
-                      isEmployee,
-                    );
-                  }).toList() ??
-                  [],
-            ),
+                crossAxisCount: 3,
+                children: room.products
+                        ?.map((product) => _buildProductCard(
+                            product.name,
+                            product.imageRoute,
+                            product.quantity.toString(),
+                            context,
+                            isEmployee))
+                        .toList() ??
+                    []),
           ),
           const Divider(thickness: 2),
           const SizedBox(height: 24.0),

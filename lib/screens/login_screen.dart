@@ -138,12 +138,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: const Text('Iniciar Sesión'),
               ),
             ),
-            SizedBox(height: 40),
-            Row(
+            const SizedBox(height: 40),
+            const Row(
               children: [
                 Expanded(child: Divider(thickness: 3)),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  padding: EdgeInsets.symmetric(horizontal: 15),
                   child: Text(
                     'o',
                     style: TextStyle(fontSize: 20, color: Colors.black),
@@ -152,25 +152,25 @@ class _LoginScreenState extends State<LoginScreen> {
                 Expanded(child: Divider(thickness: 3)),
               ],
             ),
-            SizedBox(height: 20),
-            Text('Ingresar tu QR', style: TextStyle(fontSize: 25)),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
+            const Text('Ingresar tu QR', style: TextStyle(fontSize: 25)),
+            const SizedBox(height: 20),
             Center(
               child: ElevatedButton.icon(
-                icon: Icon(Icons.qr_code_scanner, size: 30),
-                label: Text('Escanear QR', style: TextStyle(fontSize: 20)),
+                icon: const Icon(Icons.qr_code_scanner, size: 30),
+                label: const Text('Escanear QR', style: TextStyle(fontSize: 20)),
                 onPressed: () async {
                   final qrCode = await Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => QrScanPage()),
+                    MaterialPageRoute(builder: (context) => const QrScanPage()),
                   );
                   if (qrCode != null) {
                     _idController.text = qrCode;
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
-                  minimumSize: Size(double.infinity, 70),
+                  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+                  minimumSize: const Size(double.infinity, 70),
                 ),
               ),
             ),

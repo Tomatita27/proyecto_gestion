@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_gestion/data/room.dart';
 import 'package:proyecto_gestion/screens/inventary_screen.dart';
 
 class RoomType extends StatelessWidget {
@@ -140,8 +141,11 @@ class RoomType extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            InventoryScreen(roomType: roomType, isEmployee: isEmployee, roomNumber: roomNumber.toString()),
+                        builder: (context) {
+                          // TODO: OBTENER DE LA BASE DE DATOS LA HABITACION
+                          Room room = roomMap[roomType]?.elementAt(index) ?? Room(id: "", number: 0, type: "", imageRoute: "");
+                          return InventoryScreen(room: room, isEmployee: isEmployee);
+                        }
                       ),
                     );
                   },

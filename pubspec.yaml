@@ -19,6 +19,7 @@ dependencies:
   qr_flutter: ^4.1.0
   qr_code_scanner: ^1.0.1
   image_picker: ^1.1.2
+  uuid: ^4.4.0
 
 dev_dependencies:
   flutter_test:
@@ -31,16 +32,16 @@ flutter:
   assets:
     - assets/logo.png
     - assets/
-    - assets/Cafetera.png
-    - assets/Manteles.png
-    - assets/Mantas.png
-    - assets/Fundas.png
-    - assets/Almohadas.png
-    - assets/Sabanas.png
-    - assets/Toallas.png
-    - assets/Toalla mano.png
-    - assets/Tapete bano.png
-    - assets/Secador.png
-    - assets/Control Rem.png
-    - assets/Bata.png
+    - assets/cafetera.png
+    - assets/manteles.png
+    - assets/mantas.png
+    - assets/fundas.png
+    - assets/almohadas.png
+    - assets/sabanas.png
+    - assets/toallas.png
+    - assets/toalla_mano.png
+    - assets/tapete_bano.png
+    - assets/secador.png
+    - assets/control_rem.png
+    - assets/bata.png
     - assets/empleado.png
