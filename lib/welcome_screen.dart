@@ -2,25 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:proyecto_gestion/login_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
+  const WelcomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Material(
-      child: Container(
+      child: SizedBox(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         child: Stack(
           children: [
+            const TextField(
+            ),
             Container(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height / 1.6,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
               ),
             ),
             Container(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height / 1.6,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Color(0xFF674AEF),
                 borderRadius:
                     BorderRadius.only(bottomRight: Radius.circular(70)),
@@ -31,7 +35,7 @@ class WelcomeScreen extends StatelessWidget {
                   10, // Adjust the position as needed
               left: 0,
               right: 0,
-              child: Center(
+              child: const Center(
                 child: Text(
                   "BIENVENIDO A",
                   style: TextStyle(
@@ -54,7 +58,7 @@ class WelcomeScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: Color.fromARGB(255, 250, 252,
+                      color: const Color.fromARGB(255, 250, 252,
                           253), // Adjust the color of the border as needed
                       width: 4.0, // Adjust the width of the border as needed
                     ),
@@ -72,7 +76,7 @@ class WelcomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-            Positioned(
+            const Positioned(
               top: 460, // Adjust the position as needed
               left: 0,
               right: 0,
@@ -92,7 +96,7 @@ class WelcomeScreen extends StatelessWidget {
               child: Container(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height / 2.666,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Color(0xFF674AEF),
                 ),
               ),
@@ -102,8 +106,8 @@ class WelcomeScreen extends StatelessWidget {
               child: Container(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height / 2.666,
-                padding: EdgeInsets.only(top: 40, bottom: 30),
-                decoration: BoxDecoration(
+                padding: const EdgeInsets.only(top: 40, bottom: 30),
+                decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(70),
@@ -112,18 +116,18 @@ class WelcomeScreen extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(height: 10), // Moved inside the Column
+                    const SizedBox(height: 10), // Moved inside the Column
                     Material(
-                      color: Color(0xFF674AEF),
+                      color: const Color(0xFF674AEF),
                       borderRadius: BorderRadius.circular(10),
                       child: InkWell(
                         onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
                         },
                         child: Container(
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               vertical: 15, horizontal: 50),
-                          child: Text(
+                          child: const Text(
                             "Iniciar Sesión",
                             style: TextStyle(
                               color: Colors.white,

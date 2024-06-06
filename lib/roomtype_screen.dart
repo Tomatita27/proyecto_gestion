@@ -5,16 +5,15 @@ class RoomType extends StatelessWidget {
   final bool isEmployee;
   final String userType;
 
-  const RoomType({Key? key, required this.isEmployee, required this.userType})
-      : super(key: key);
+  const RoomType({super.key, required this.isEmployee, required this.userType});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 103, 74, 239),
+        backgroundColor: const Color.fromARGB(255, 103, 74, 239),
         leading: IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back,
             size: 30,
           ),
@@ -22,14 +21,14 @@ class RoomType extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
-        title: Text(
+        title: const Text(
           'Tipo de habitaciones',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(Icons.qr_code_scanner, size: 40),
+            icon: const Icon(Icons.qr_code_scanner, size: 40),
             onPressed: () {
               Navigator.pushNamed(context, '/qr_scan_page');
             },
@@ -38,25 +37,25 @@ class RoomType extends StatelessWidget {
       ),
       body: Column(
         children: [
-          Divider(thickness: 2),
-          SizedBox(height: 30),
+          const Divider(thickness: 2),
+          const SizedBox(height: 30),
           Expanded(
             child: GridView.count(
               crossAxisCount: 2,
               mainAxisSpacing: 20.0,
               crossAxisSpacing: 10.0,
               children: [
-                _buildRoomTypeCard('Individual', 'assets/individual.png', context),
-                _buildRoomTypeCard('Doble', 'assets/doble.png', context),
-                _buildRoomTypeCard('Familiar', 'assets/familiar.png', context),
-                _buildRoomTypeCard('Suite', 'assets/suite.png', context),
+                _buildRoomTypeCard('Individual', 'assets/individual.png', context, 1, 10),
+                _buildRoomTypeCard('Doble', 'assets/doble.png', context, 11, 20),
+                _buildRoomTypeCard('Familiar', 'assets/familiar.png', context, 21, 26),
+                _buildRoomTypeCard('Suite', 'assets/suite.png', context, 27, 30),
               ],
             ),
           ),
-          Divider(thickness: 2),
+          const Divider(thickness: 2),
           Container(
-            color: Color.fromARGB(255, 103, 74, 239),
-            padding: EdgeInsets.all(16.0),
+            color: const Color.fromARGB(255, 103, 74, 239),
+            padding: const EdgeInsets.all(16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -65,24 +64,23 @@ class RoomType extends StatelessWidget {
                   children: [
                     Text(
                       isEmployee ? 'Información empleado:' : 'Información jefa:',
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.white),
                     ),
                     Text(
                       isEmployee ? 'Juan Perez' : 'Ana Lopez',
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.white),
                     ),
                   ],
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 CircleAvatar(
-                  backgroundImage:
-                      AssetImage(isEmployee ? 'assets/empleado.png' : 'assets/jefa.png'),
+                  backgroundImage: AssetImage(isEmployee ? 'assets/empleado.png' : 'assets/jefa.png'),
                   radius: 30,
                 ),
               ],
@@ -93,17 +91,20 @@ class RoomType extends StatelessWidget {
     );
   }
 
-  Widget _buildRoomTypeCard(String roomType, String imagePath, BuildContext context) {
+  Widget _buildRoomTypeCard(String roomType, String imagePath, BuildContext context, int start, int end) {
     return GestureDetector(
       onTap: () {
-        print('Clicked on $roomType');
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                InventoryScreen(roomType: roomType, isEmployee: isEmployee),
-          ),
-        );
+        if (isEmployee) {
+          _showRoomNumberDialog(context, roomType, start, end);
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  InventoryScreen(roomType: roomType, isEmployee: isEmployee, roomNumber: 'Sin número'),
+            ),
+          );
+        }
       },
       child: AspectRatio(
         aspectRatio: 2.0,
@@ -116,16 +117,50 @@ class RoomType extends StatelessWidget {
                   fit: BoxFit.cover,
                 ),
               ),
-              SizedBox(height: 1),
+              const SizedBox(height: 1),
               Text(
                 'Habitación $roomType',
-                style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  void _showRoomNumberDialog(BuildContext context, String roomType, int start, int end) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Selecciona el número de habitación'),
+          content: SizedBox(
+            width: double.minPositive,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: end - start + 1,
+              itemBuilder: (BuildContext context, int index) {
+                int roomNumber = start + index;
+                return ListTile(
+                  title: Text('Habitación $roomNumber'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            InventoryScreen(roomType: roomType, isEmployee: isEmployee, roomNumber: roomNumber.toString()),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -1,22 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:proyecto_gestion/firebase_options.dart';
 import 'package:proyecto_gestion/logout_screen.dart';
+import 'package:proyecto_gestion/welcome_screen.dart';
+import 'package:proyecto_gestion/login_screen.dart';
 import 'package:proyecto_gestion/qr_scan_page.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Importa Cloud Firestore
 
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.white,
+      ),
+      home: WelcomeScreen(),
+      routes: {
+        '/welcome_screen': (context) => WelcomeScreen(),
+        '/login_screen': (context) => const LoginScreen(),
+        '/qr_scan_page': (context) => QrScanPage(),
+      },
+    );
+  }
+}
 
 class InventoryScreen extends StatelessWidget {
   final String roomType;
   final bool isEmployee;
+  final String roomNumber;
 
   const InventoryScreen({
     Key? key,
     required this.roomType,
     required this.isEmployee,
+    required this.roomNumber,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    String roomNumber = "120";
     final Map<String, Map<String, String>> productQuantities = {
       'Individual': {
         'Cafetera': '1',
@@ -93,12 +125,12 @@ class InventoryScreen extends StatelessWidget {
             children: [
               Text(
                 'Habitación $roomType',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
               ),
               SizedBox(height: 4),
               Text(
                 'Número $roomNumber',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle( fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
               ),
             ],
           ),
@@ -113,7 +145,6 @@ class InventoryScreen extends StatelessWidget {
                   ),
                 );
                 if (result != null) {
-                  // Haz algo con el resultado del escaneo QR, por ejemplo, mostrar un mensaje
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Código escaneado: $result')),
                   );
@@ -127,6 +158,13 @@ class InventoryScreen extends StatelessWidget {
                   _showAddProductDialog(context);
                 },
               ),
+            IconButton(
+              icon: Icon(Icons.warning, size: 40),
+              onPressed: () {
+                _showWarningDialog(context);
+              },
+              color: Colors.red, // Color del botón
+            ),
           ],
         ),
       ),
@@ -138,13 +176,15 @@ class InventoryScreen extends StatelessWidget {
             child: GridView.count(
               crossAxisCount: 3,
               children: productQuantities[roomType]?.entries.map((entry) {
-                return _buildProductCard(
-                  entry.key,
-                  'assets/${entry.key}.png', // Asegúrate de que estos nombres coincidan con los archivos de imagen exactos
-                  entry.value,
-                  context,
-                );
-              }).toList() ?? [],
+                    return _buildProductCard(
+                      entry.key,
+                      'assets/${entry.key}.png',
+                      entry.value,
+                      context,
+                      isEmployee,
+                    );
+                  }).toList() ??
+                  [],
             ),
           ),
           Divider(thickness: 2),
@@ -189,9 +229,7 @@ class InventoryScreen extends StatelessWidget {
                   },
                   child: CircleAvatar(
                     backgroundImage: AssetImage(
-                      isEmployee
-                          ? 'assets/empleado.png'
-                          : 'assets/jefa.png',
+                      isEmployee ? 'assets/empleado.png' : 'assets/jefa.png',
                     ),
                     radius: 30,
                   ),
@@ -205,7 +243,7 @@ class InventoryScreen extends StatelessWidget {
   }
 
   Widget _buildProductCard(String productName, String imagePath,
-      String quantity, BuildContext context) {
+      String quantity, BuildContext context, bool isEmployee) {
     return Card(
       child: Column(
         children: [
@@ -241,7 +279,15 @@ class InventoryScreen extends StatelessWidget {
                 child: IconButton(
                   icon: Icon(Icons.more_horiz, size: 20.0),
                   onPressed: () {
-                    _showAddProductDialog(context);
+                    if (isEmployee) {
+                      _showAddNoteDialog(context, productName);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text(
+                                'Sólo los empleados pueden agregar notas')),
+                      );
+                    }
                   },
                 ),
               ),
@@ -252,7 +298,109 @@ class InventoryScreen extends StatelessWidget {
     );
   }
 
+  // Función para mostrar el cuadro de diálogo para agregar notas
+  void _showAddNoteDialog(BuildContext context, String productName) {
+    TextEditingController noteController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Agregar Nota al Producto'),
+          content: TextField(
+            controller: noteController,
+            decoration: InputDecoration(labelText: 'Nota'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                String note = noteController.text.trim();
+                if (note.isNotEmpty) {
+                  // Guardar la nota en Firestore
+                  FirebaseFirestore.instance.collection('notas').add({
+                    'producto': productName,
+                    'nota': note,
+                    'fecha': Timestamp.now(),
+                  });
+
+                  Navigator.pop(context);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('La nota no puede estar vacía')),
+                  );
+                }
+              },
+              child: Text('Agregar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Función para mostrar el cuadro de diálogo para reportar incidentes o daños
+  void _showWarningDialog(BuildContext context) {
+    TextEditingController incidentController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Reportar Incidentes o Daños'),
+          content: TextField(
+            controller: incidentController,
+            decoration: InputDecoration(labelText: 'Descripción del Incidente'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                String incident = incidentController.text.trim();
+                if (incident.isNotEmpty) {
+                  // Guardar el incidente en Firestore
+                  FirebaseFirestore.instance.collection('incidentes').add({
+                    'descripcion': incident,
+                    'fecha': Timestamp.now(),
+                  });
+
+                  Navigator.pop(context);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text(
+                            'La descripción del incidente no puede estar vacía')),
+                  );
+                }
+              },
+              child: Text('Reportar'),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.red, // Color del texto del botón
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Función para mostrar el cuadro de diálogo para agregar un nuevo producto
   void _showAddProductDialog(BuildContext context) {
+    TextEditingController productNameController = TextEditingController();
+
+    TextEditingController quantityController = TextEditingController();
+    TextEditingController imageController = TextEditingController();
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -262,14 +410,16 @@ class InventoryScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
+                controller: productNameController,
                 decoration: InputDecoration(labelText: 'Nombre del Producto'),
               ),
               TextField(
+                controller: quantityController,
                 decoration: InputDecoration(labelText: 'Cantidad'),
-                keyboardType: TextInputType.number,
               ),
               TextField(
-                decoration: InputDecoration(labelText: 'Imagen'),
+                controller: imageController,
+                decoration: InputDecoration(labelText: 'Ruta de la Imagen'),
               ),
             ],
           ),
@@ -282,8 +432,29 @@ class InventoryScreen extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
-                // Add logic to add product here
+                String productName = productNameController.text.trim();
+                String quantity = quantityController.text.trim();
+
+                String imagePath = imageController.text.trim();
+
+                if (productName.isNotEmpty &&
+                    quantity.isNotEmpty &&
+                    imagePath.isNotEmpty) {
+                  // Guardar el producto en Firestore
+                  FirebaseFirestore.instance.collection('productos').add({
+                    'nombre': productName,
+                    'cantidad': quantity,
+                    'imagen': imagePath,
+                    'fecha': Timestamp.now(),
+                  });
+
+                  Navigator.pop(context);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('Todos los campos son obligatorios')),
+                  );
+                }
               },
               child: Text('Agregar'),
             ),

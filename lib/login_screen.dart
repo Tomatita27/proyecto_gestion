@@ -12,8 +12,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _idController = TextEditingController();
+  // Controladores para los campos de id y contraseña
+  final _idController = TextEditingController(); 
   final _passwordController = TextEditingController();
+  //variable para almacenar errores de id
   String _idError = '';
 
   void _validateId() {
@@ -30,6 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
           icon: Icon(Icons.arrow_back),
           iconSize: 40,
           onPressed: () {
+            // Navega de regreso a la pantalla anterior al presionar el botón de retroceso
             Navigator.pop(context);
           },
         ),
@@ -40,7 +43,8 @@ class _LoginScreenState extends State<LoginScreen> {
             fontFamily: 'Roboto',
           ),
         ),
-        centerTitle: true,
+        // Centra el título en la AppBar
+        centerTitle: true, 
         backgroundColor: Color.fromARGB(255, 103, 74, 239),
         foregroundColor: Colors.black,
         elevation: 0,

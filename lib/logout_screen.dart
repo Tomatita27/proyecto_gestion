@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 class LogoutScreen extends StatelessWidget {
   final bool isEmployee; // Nueva propiedad para determinar si es empleado o jefa
 
-  const LogoutScreen({Key? key, required this.isEmployee}) : super(key: key);
+  const LogoutScreen({super.key, required this.isEmployee});
 
   @override
   Widget build(BuildContext context) {
@@ -12,8 +12,8 @@ class LogoutScreen extends StatelessWidget {
       body: Column(
         children: [
           Container(
-            color: Color.fromARGB(255, 103, 74, 239),
-            padding: EdgeInsets.all(16.0),
+            color: const Color.fromARGB(255, 103, 74, 239),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center, // Cambiar a center
               children: [
@@ -21,7 +21,7 @@ class LogoutScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.arrow_back, color: Colors.white),
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
                       onPressed: () {
                         Navigator.pop(context);
                       },
@@ -32,7 +32,7 @@ class LogoutScreen extends StatelessWidget {
                           isEmployee
                               ? 'Información del empleado:'
                               : 'Información de la jefa:',
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
                               color: Colors.white),
@@ -41,7 +41,7 @@ class LogoutScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center, // Centrar el Row
                   children: [
@@ -51,20 +51,20 @@ class LogoutScreen extends StatelessWidget {
                         children: [
                           Text(
                             isEmployee ? 'Juan Perez' : 'Ana Lopez',
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white),
                           ),
-                          SizedBox(height: 10),
-                          Text(
+                          const SizedBox(height: 10),
+                          const Text(
                             'Horario:',
                             style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white),
                           ),
-                          Text(
+                          const Text(
                             '8:00 a.m a 17:00 p.m',
                             style:
                                 TextStyle(fontSize: 18, color: Colors.white),
@@ -83,9 +83,9 @@ class LogoutScreen extends StatelessWidget {
               ],
             ),
           ),
-          Divider(thickness: 2),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
+          const Divider(thickness: 2),
+          const Padding(
+            padding: EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -126,20 +126,20 @@ class LogoutScreen extends StatelessWidget {
               ],
             ),
           ),
-          Divider(thickness: 2),
+          const Divider(thickness: 2),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Center(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                  textStyle: TextStyle(fontSize: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                  textStyle: const TextStyle(fontSize: 20),
                 ),
                 onPressed: () async {
                   await FirebaseAuth.instance.signOut();
                   Navigator.pushReplacementNamed(context, '/welcome_screen');
                 },
-                child: Text('CERRAR SESIÓN', style: TextStyle(fontSize: 20)),
+                child: const Text('CERRAR SESIÓN', style: TextStyle(fontSize: 20)),
               ),
             ),
           ),
