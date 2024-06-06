@@ -3,6 +3,8 @@ import 'package:proyecto_gestion/data/product.dart';
 import 'package:proyecto_gestion/data/room.dart';
 import 'package:uuid/uuid.dart';
 
+import 'app_user.dart';
+
 Future<void> addRoom(Room room) {
   return FirebaseFirestore.instance.collection('habitaciones').doc(room.id).set({
     'id': room.id,
@@ -39,11 +41,13 @@ Future<void> addProductToRoom(String roomId, String productName, int quantity, S
   }
 }
 
-Future<void> addIncident(String description, Timestamp date) async {
+Future<void> addIncident(String roomId, int roomNumber, String description, Timestamp date) async {
   try {
     if (description.isNotEmpty) {
       await FirebaseFirestore.instance.collection('incidentes').add({
         'id': const Uuid().v4(),
+        'habitacion_id': roomId,
+        'habitacion_numero': roomNumber,
         'descripcion': description,
         'fecha': date,
       });
@@ -55,13 +59,16 @@ Future<void> addIncident(String description, Timestamp date) async {
   }
 }
 
-Future<void> addNote(String description, String productId, Timestamp date) async {
+Future<void> addNote(String roomId, int roomNumber, String description, String productId, String productName, Timestamp date) async {
   try {
     if (description.isNotEmpty) {
       await FirebaseFirestore.instance.collection('notas').add({
         'id': const Uuid().v4(),
+        'habitacion_id': roomId,
+        'habitacion_numero': roomNumber,
         'descripcion': description,
-        'producto_id': productId,
+        'productoId': productId,
+        'producto_nombre': productName,
         'fecha': date,
       });
     } else {
@@ -108,5 +115,42 @@ Future<List<Product>> getProductsFromRoom(String roomId) async {
     )).toList() ?? [];
   } catch (error) {
     throw Exception('Error al obtener los productos: $error');
+  }
+}
+
+Future<void> updateProductsQuantity(List<Product> products, String roomId) async {
+  try {
+    var room = await FirebaseFirestore.instance.collection('habitaciones').doc(roomId).get();
+    var updatedRoom = Room(
+      id: room.id,
+      number: room.data()!['numero'],
+      type: room.data()!['tipo'],
+      imageRoute: room.data()!['imagen'],
+      products: products.map<Product>((product) => Product(
+        id: product.id,
+        name: product.name,
+        quantity: product.quantity,
+        imageRoute: product.imageRoute,
+      )).toList(),
+    );
+    await addRoom(updatedRoom);
+  } catch (error) {
+    throw Exception('Error al actualizar los productos: $error');
+  }
+}
+
+Future<AppUser> getUser(String userId) async {
+  try {
+    final user = await FirebaseFirestore.instance.collection('usuarios').doc(userId).get();
+    return AppUser(
+      id: user.id,
+      email: user.data()!['correo'],
+      firstName: user.data()!['nombre'],
+      lastName: user.data()!['apellido'],
+      photoRoute: user.data()!['foto'],
+      isBoss: user.data()!['es_jefe'],
+    );
+  } catch (error) {
+    throw Exception('Error al obtener el usuario: $error');
   }
 }

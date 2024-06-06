@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:proyecto_gestion/data/app_user.dart';
 
 class LogoutScreen extends StatelessWidget {
-  final bool isEmployee; // Nueva propiedad para determinar si es empleado o jefa
+  // final bool isEmployee; // Nueva propiedad para determinar si es empleado o jefa
+  final AppUser user;
 
-  const LogoutScreen({super.key, required this.isEmployee});
+  const LogoutScreen({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +31,7 @@ class LogoutScreen extends StatelessWidget {
                     Expanded(
                       child: Center(
                         child: Text(
-                          isEmployee
+                          !user.isBoss
                               ? 'Información del empleado:'
                               : 'Información de la jefa:',
                           style: const TextStyle(
@@ -50,7 +52,7 @@ class LogoutScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center, // Cambiar a center
                         children: [
                           Text(
-                            isEmployee ? 'Juan Perez' : 'Ana Lopez',
+                            "${user.firstName} ${user.lastName}",
                             style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -73,9 +75,7 @@ class LogoutScreen extends StatelessWidget {
                       ),
                     ),
                     CircleAvatar(
-                      backgroundImage: AssetImage(isEmployee
-                          ? 'assets/empleado.png'
-                          : 'assets/jefa.png'),
+                      backgroundImage: AssetImage(user.photoRoute),
                       radius: 40,
                     ),
                   ],

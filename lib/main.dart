@@ -13,22 +13,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  // await generateRoomMap();
-
-  // addProductToFirebase('Producto 1', 10, 'https://via.placeholder.com/150');
-  // addIncident('Incidente 1', Timestamp.now());
-  // addNote('Nota 1', 'producto_id', Timestamp.now());
-
-  // for (var room in roomList) {
-  //   print('ID: ${room.id}');
-  //   print('Habitación: ${room.number} - Tipo: ${room.type}');
-  //   print('Productos:');
-  //   for (var product in room.products!) {
-  //     print('Nombre: ${product.name} - Cantidad: ${product.quantity}');
-  //   }
-  // }
-
+  
   await initializeRoomMap();
 
   runApp(const MyApp());

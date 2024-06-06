@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_gestion/data/app_user.dart';
 import 'package:proyecto_gestion/data/firebase_operations.dart';
 import 'package:proyecto_gestion/data/room.dart';
 import 'package:proyecto_gestion/screens/inventary_screen.dart';
 
 class RoomType extends StatelessWidget {
-  final bool isEmployee;
-  final String userType;
+  final AppUser user;
+  // final bool isEmployee;
+  // final String userType;
 
-  const RoomType({super.key, required this.isEmployee, required this.userType});
+  const RoomType(
+      {super.key,
+      required this.user,
+      // required this.isEmployee,
+      // required this.userType
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -65,14 +72,14 @@ class RoomType extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      isEmployee ? 'Información empleado:' : 'Información jefa:',
+                      !user.isBoss ? 'Información empleado:' : 'Información jefa:',
                       style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.white),
                     ),
                     Text(
-                      isEmployee ? 'Juan Perez' : 'Ana Lopez',
+                      "${user.firstName} ${user.lastName}",
                       style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -82,7 +89,7 @@ class RoomType extends StatelessWidget {
                 ),
                 const SizedBox(width: 16),
                 CircleAvatar(
-                  backgroundImage: AssetImage(isEmployee ? 'assets/empleado.png' : 'assets/jefa.png'),
+                  backgroundImage: AssetImage(user.photoRoute),
                   radius: 30,
                 ),
               ],
@@ -134,7 +141,7 @@ class RoomType extends StatelessWidget {
               shrinkWrap: true,
               itemCount: end - start + 1,
               itemBuilder: (BuildContext context, int index) {
-                int roomNumber = start + index;
+                int roomNumber = roomMap[roomType]!.elementAt(index).number;
                 return ListTile(
                   title: Text('Habitación $roomNumber'),
                   onTap: () async {
@@ -146,9 +153,8 @@ class RoomType extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) {
-                          // TODO: OBTENER DE LA BASE DE DATOS LA HABITACION
                           Room room = roomMap[roomType]!.elementAt(index);
-                          return InventoryScreen(room: room, isEmployee: isEmployee);
+                          return InventoryScreen(room: room, user: user,);
                         }
                       ),
                     );

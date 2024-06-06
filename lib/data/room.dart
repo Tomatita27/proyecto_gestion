@@ -120,19 +120,3 @@ Future<void> initializeRoomMap() async {
 //     ),
 //   };
 // }
-
-
-List<Room> individualRooms = [
-  Room(
-      id: 't9dA50p7gAadVhjUgvKe',
-      number: 1,
-      type: 'Individual',
-      imageRoute: 'assets/individual.png',
-      products: individualProducts),
-  Room(
-      id: 't9dA50p7gAadVhjUgvKe',
-      number: 2,
-      type: 'Individual',
-      imageRoute: 'assets/individual.png',
-      products: individualProducts),
-];

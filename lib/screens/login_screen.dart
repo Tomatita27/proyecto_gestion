@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:proyecto_gestion/data/app_user.dart';
+import 'package:proyecto_gestion/data/firebase_operations.dart';
 import 'roomtype_screen.dart';
 import 'qr_scan_page.dart';
 
@@ -99,22 +101,17 @@ class _LoginScreenState extends State<LoginScreen> {
                         password: _passwordController.text,
                       );
 
-                      String userType = '';
-                      if (userCredential.user != null) {
-                        String userEmail = userCredential.user!.email ?? '';
-                        if (userEmail == 'l21170453@hotel.com') {
-                          userType = 'Empleado';
-                        } else if (userEmail == 'jefe@hotel.com') {
-                          userType = 'Jefa';
-                        }
-                      }
+                      String userId = userCredential.user!.uid;
+                      AppUser user = await getUser(userId);
 
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => RoomType(
-                                isEmployee: userType == 'Empleado',
-                                userType: userType)),
+                                user: user,
+                                // isEmployee: userType == 'Empleado',
+                                // userType: userType
+                                )),
                       );
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
