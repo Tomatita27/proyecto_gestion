@@ -4,6 +4,7 @@ import 'package:proyecto_gestion/screens/logout_screen.dart';
 import 'package:proyecto_gestion/screens/welcome_screen.dart';
 import 'package:proyecto_gestion/screens/login_screen.dart';
 import 'package:proyecto_gestion/screens/qr_scan_page.dart';
+import 'package:proyecto_gestion/data/firebase_operations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Importa Cloud Firestore
 
 class MyApp extends StatelessWidget {
@@ -333,7 +334,6 @@ class InventoryScreen extends StatelessWidget {
   // Función para mostrar el cuadro de diálogo para agregar un nuevo producto
   void _showAddProductDialog(BuildContext context) {
     TextEditingController productNameController = TextEditingController();
-
     TextEditingController quantityController = TextEditingController();
     TextEditingController imageController = TextEditingController();
 
@@ -369,30 +369,44 @@ class InventoryScreen extends StatelessWidget {
               child: const Text('Cancelar'),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 String productName = productNameController.text.trim();
                 String quantity = quantityController.text.trim();
-
                 String imagePath = imageController.text.trim();
 
-                if (productName.isNotEmpty &&
-                    quantity.isNotEmpty &&
-                    imagePath.isNotEmpty) {
-                  // Guardar el producto en Firestore
-                  FirebaseFirestore.instance.collection('productos').add({
-                    'nombre': productName,
-                    'cantidad': quantity,
-                    'imagen': imagePath,
-                    'fecha': Timestamp.now(),
-                  });
-
-                  Navigator.pop(context);
-                } else {
+                await addProductToRoom(
+                        room.id, productName, int.parse(quantity), imagePath)
+                    .then((_) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Todos los campos son obligatorios')),
+                    SnackBar(
+                        content: Text('Producto $productName agregado correctamente')),
                   );
-                }
+                  Navigator.pop(context);
+                }).catchError((error) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('Error al agregar el producto: $error')),
+                  );
+                });
+
+                // if (productName.isNotEmpty &&
+                //     quantity.isNotEmpty &&
+                //     imagePath.isNotEmpty) {
+                //   // Guardar el producto en Firestore
+                //   FirebaseFirestore.instance.collection('productos').add({
+                //     'nombre': productName,
+                //     'cantidad': quantity,
+                //     'imagen': imagePath,
+                //     'fecha': Timestamp.now(),
+                //   });
+
+                //   Navigator.pop(context);
+                // } else {
+                //   ScaffoldMessenger.of(context).showSnackBar(
+                //     const SnackBar(
+                //         content: Text('Todos los campos son obligatorios')),
+                //   );
+                // }
               },
               child: const Text('Agregar'),
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_gestion/data/firebase_operations.dart';
 import 'package:proyecto_gestion/data/room.dart';
 import 'package:proyecto_gestion/screens/inventary_screen.dart';
 
@@ -46,10 +47,10 @@ class RoomType extends StatelessWidget {
               mainAxisSpacing: 20.0,
               crossAxisSpacing: 10.0,
               children: [
-                _buildRoomTypeCard('Individual', 'assets/individual.png', context, 1, 10),
-                _buildRoomTypeCard('Doble', 'assets/doble.png', context, 11, 20),
-                _buildRoomTypeCard('Familiar', 'assets/familiar.png', context, 21, 26),
-                _buildRoomTypeCard('Suite', 'assets/suite.png', context, 27, 30),
+                _buildRoomTypeCard('Individual', 'assets/individual.png', context, roomMap['Individual']!.first.number, roomMap['Individual']!.last.number),
+                _buildRoomTypeCard('Doble', 'assets/doble.png', context, roomMap['Doble']!.first.number, roomMap['Doble']!.last.number),
+                _buildRoomTypeCard('Familiar', 'assets/familiar.png', context, roomMap['Familiar']!.first.number, roomMap['Familiar']!.last.number),
+                _buildRoomTypeCard('Suite', 'assets/suite.png', context, roomMap['Suite']!.first.number, roomMap['Suite']!.last.number),
               ],
             ),
           ),
@@ -136,14 +137,17 @@ class RoomType extends StatelessWidget {
                 int roomNumber = start + index;
                 return ListTile(
                   title: Text('Habitación $roomNumber'),
-                  onTap: () {
+                  onTap: () async {
+                    roomMap[roomType]!.elementAt(index).products =
+                        await getProductsFromRoom(
+                            roomMap[roomType]!.elementAt(index).id);
                     Navigator.pop(context);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) {
                           // TODO: OBTENER DE LA BASE DE DATOS LA HABITACION
-                          Room room = roomMap[roomType]?.elementAt(index) ?? Room(id: "", number: 0, type: "", imageRoute: "");
+                          Room room = roomMap[roomType]!.elementAt(index);
                           return InventoryScreen(room: room, isEmployee: isEmployee);
                         }
                       ),
