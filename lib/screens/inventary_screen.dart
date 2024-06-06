@@ -1,19 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:proyecto_gestion/firebase_options.dart';
-import 'package:proyecto_gestion/logout_screen.dart';
-import 'package:proyecto_gestion/welcome_screen.dart';
-import 'package:proyecto_gestion/login_screen.dart';
-import 'package:proyecto_gestion/qr_scan_page.dart';
+import 'package:proyecto_gestion/screens/logout_screen.dart';
+import 'package:proyecto_gestion/screens/welcome_screen.dart';
+import 'package:proyecto_gestion/screens/login_screen.dart';
+import 'package:proyecto_gestion/screens/qr_scan_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Importa Cloud Firestore
-
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp(MyApp());
-}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -25,11 +15,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: WelcomeScreen(),
+      home: const WelcomeScreen(),
       routes: {
-        '/welcome_screen': (context) => WelcomeScreen(),
+        '/welcome_screen': (context) => const WelcomeScreen(),
         '/login_screen': (context) => const LoginScreen(),
-        '/qr_scan_page': (context) => QrScanPage(),
+        '/qr_scan_page': (context) => const QrScanPage(),
       },
     );
   }
@@ -41,11 +31,11 @@ class InventoryScreen extends StatelessWidget {
   final String roomNumber;
 
   const InventoryScreen({
-    Key? key,
+    super.key,
     required this.roomType,
     required this.isEmployee,
     required this.roomNumber,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -110,11 +100,11 @@ class InventoryScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(80),
+        preferredSize: const Size.fromHeight(80),
         child: AppBar(
-          backgroundColor: Color.fromARGB(255, 103, 74, 239),
+          backgroundColor: const Color.fromARGB(255, 103, 74, 239),
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, size: 40),
+            icon: const Icon(Icons.arrow_back, size: 40),
             onPressed: () {
               Navigator.pop(context);
             },
@@ -125,23 +115,29 @@ class InventoryScreen extends StatelessWidget {
             children: [
               Text(
                 'Habitación $roomType',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 'Número $roomNumber',
-                style: TextStyle( fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
               ),
             ],
           ),
           actions: [
             IconButton(
-              icon: Icon(Icons.qr_code_scanner, size: 40),
+              icon: const Icon(Icons.qr_code_scanner, size: 40),
               onPressed: () async {
                 final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => QrScanPage(),
+                    builder: (context) => const QrScanPage(),
                   ),
                 );
                 if (result != null) {
@@ -153,25 +149,26 @@ class InventoryScreen extends StatelessWidget {
             ),
             if (!isEmployee)
               IconButton(
-                icon: Icon(Icons.more_vert, size: 40),
+                icon: const Icon(Icons.more_vert, size: 40),
                 onPressed: () {
                   _showAddProductDialog(context);
                 },
               ),
-            IconButton(
-              icon: Icon(Icons.warning, size: 40),
-              onPressed: () {
-                _showWarningDialog(context);
-              },
-              color: Colors.red, // Color del botón
-            ),
+            if (isEmployee)
+              IconButton(
+                icon: const Icon(Icons.warning, size: 40),
+                onPressed: () {
+                  _showWarningDialog(context);
+                },
+                color: Colors.red, // Color del botón
+              ),
           ],
         ),
       ),
       body: Column(
         children: [
-          Divider(thickness: 2),
-          SizedBox(height: 30.0),
+          const Divider(thickness: 2),
+          const SizedBox(height: 30.0),
           Expanded(
             child: GridView.count(
               crossAxisCount: 3,
@@ -187,11 +184,11 @@ class InventoryScreen extends StatelessWidget {
                   [],
             ),
           ),
-          Divider(thickness: 2),
-          SizedBox(height: 24.0),
+          const Divider(thickness: 2),
+          const SizedBox(height: 24.0),
           Container(
-            color: Color.fromARGB(255, 103, 74, 239),
-            padding: EdgeInsets.all(16.0),
+            color: const Color.fromARGB(255, 103, 74, 239),
+            padding: const EdgeInsets.all(16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -202,21 +199,21 @@ class InventoryScreen extends StatelessWidget {
                       isEmployee
                           ? 'Información empleado:'
                           : 'Información jefa:',
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.white),
                     ),
                     Text(
                       isEmployee ? 'Juan Perez' : 'Ana Lopez',
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.white),
                     ),
                   ],
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -253,37 +250,37 @@ class InventoryScreen extends StatelessWidget {
               fit: BoxFit.cover,
             ),
           ),
-          SizedBox(height: 1),
+          const SizedBox(height: 1),
           Text(
             productName,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                 'Cantidad: ',
                 style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
               ),
               Text(
                 quantity,
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.red),
               ),
-              SizedBox(width: 8.0),
+              const SizedBox(width: 8.0),
               Container(
-                constraints: BoxConstraints(maxWidth: 30),
+                constraints: const BoxConstraints(maxWidth: 30),
                 child: IconButton(
-                  icon: Icon(Icons.more_horiz, size: 20.0),
+                  icon: const Icon(Icons.more_horiz, size: 20.0),
                   onPressed: () {
                     if (isEmployee) {
                       _showAddNoteDialog(context, productName);
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
+                        const SnackBar(
                             content: Text(
                                 'Sólo los empleados pueden agregar notas')),
                       );
@@ -306,17 +303,17 @@ class InventoryScreen extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Agregar Nota al Producto'),
+          title: const Text('Agregar Nota al Producto'),
           content: TextField(
             controller: noteController,
-            decoration: InputDecoration(labelText: 'Nota'),
+            decoration: const InputDecoration(labelText: 'Nota'),
           ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('Cancelar'),
+              child: const Text('Cancelar'),
             ),
             TextButton(
               onPressed: () {
@@ -332,11 +329,12 @@ class InventoryScreen extends StatelessWidget {
                   Navigator.pop(context);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('La nota no puede estar vacía')),
+                    const SnackBar(
+                        content: Text('La nota no puede estar vacía')),
                   );
                 }
               },
-              child: Text('Agregar'),
+              child: const Text('Agregar'),
             ),
           ],
         );
@@ -352,17 +350,18 @@ class InventoryScreen extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Reportar Incidentes o Daños'),
+          title: const Text('Reportar Incidentes o Daños'),
           content: TextField(
             controller: incidentController,
-            decoration: InputDecoration(labelText: 'Descripción del Incidente'),
+            decoration:
+                const InputDecoration(labelText: 'Descripción del Incidente'),
           ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('Cancelar'),
+              child: const Text('Cancelar'),
             ),
             TextButton(
               onPressed: () {
@@ -377,16 +376,16 @@ class InventoryScreen extends StatelessWidget {
                   Navigator.pop(context);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                         content: Text(
                             'La descripción del incidente no puede estar vacía')),
                   );
                 }
               },
-              child: Text('Reportar'),
               style: TextButton.styleFrom(
                 foregroundColor: Colors.red, // Color del texto del botón
               ),
+              child: const Text('Reportar'),
             ),
           ],
         );
@@ -405,21 +404,23 @@ class InventoryScreen extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Agregar Nuevo Producto'),
+          title: const Text('Agregar Nuevo Producto'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: productNameController,
-                decoration: InputDecoration(labelText: 'Nombre del Producto'),
+                decoration:
+                    const InputDecoration(labelText: 'Nombre del Producto'),
               ),
               TextField(
                 controller: quantityController,
-                decoration: InputDecoration(labelText: 'Cantidad'),
+                decoration: const InputDecoration(labelText: 'Cantidad'),
               ),
               TextField(
                 controller: imageController,
-                decoration: InputDecoration(labelText: 'Ruta de la Imagen'),
+                decoration:
+                    const InputDecoration(labelText: 'Ruta de la Imagen'),
               ),
             ],
           ),
@@ -428,7 +429,7 @@ class InventoryScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('Cancelar'),
+              child: const Text('Cancelar'),
             ),
             TextButton(
               onPressed: () {
@@ -451,12 +452,12 @@ class InventoryScreen extends StatelessWidget {
                   Navigator.pop(context);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                         content: Text('Todos los campos son obligatorios')),
                   );
                 }
               },
-              child: Text('Agregar'),
+              child: const Text('Agregar'),
             ),
           ],
         );

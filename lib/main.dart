@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:proyecto_gestion/firebase_options.dart';
-import 'package:proyecto_gestion/welcome_screen.dart';
-import 'package:proyecto_gestion/login_screen.dart';
-import 'package:proyecto_gestion/qr_scan_page.dart'; // Importa la nueva pantalla
+import 'package:proyecto_gestion/data/firebase_operations.dart';
+import 'package:proyecto_gestion/data/firebase_options.dart';
+import 'package:proyecto_gestion/screens/welcome_screen.dart';
+import 'package:proyecto_gestion/screens/login_screen.dart';
+import 'package:proyecto_gestion/screens/qr_scan_page.dart'; // Importa la nueva pantalla
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    printMessage();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(

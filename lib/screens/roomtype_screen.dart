@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:proyecto_gestion/inventary_screen.dart';
+import 'package:proyecto_gestion/screens/inventary_screen.dart';
 
 class RoomType extends StatelessWidget {
   final bool isEmployee;
@@ -30,7 +30,7 @@ class RoomType extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.qr_code_scanner, size: 40),
             onPressed: () {
-              Navigator.pushNamed(context, '/qr_scan_page');
+              Navigator.pushNamed(context, '/screens/qr_scan_page');
             },
           ),
         ],
@@ -94,17 +94,7 @@ class RoomType extends StatelessWidget {
   Widget _buildRoomTypeCard(String roomType, String imagePath, BuildContext context, int start, int end) {
     return GestureDetector(
       onTap: () {
-        if (isEmployee) {
-          _showRoomNumberDialog(context, roomType, start, end);
-        } else {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  InventoryScreen(roomType: roomType, isEmployee: isEmployee, roomNumber: 'Sin número'),
-            ),
-          );
-        }
+        _showRoomNumberDialog(context, roomType, start, end);
       },
       child: AspectRatio(
         aspectRatio: 2.0,
