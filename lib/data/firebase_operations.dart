@@ -79,6 +79,34 @@ Future<void> addNote(String roomId, int roomNumber, String description, String p
   }
 }
 
+Future<void> addMovement(String userId, String description, Timestamp date) async {
+  try {
+    await FirebaseFirestore.instance.collection('movimientos').add({
+      'id': const Uuid().v4(),
+      'usuario_id': userId,
+      'descripcion': description,
+      'fecha': date,
+    });
+  } catch (error) {
+    throw Exception('Error al agregar el movimiento: $error');
+  }
+}
+
+Future<List<String>> getMovements(String userId, Timestamp date) async {
+  try {
+    final movements = await FirebaseFirestore.instance
+        .collection('movimientos')
+        .where('usuario_id', isEqualTo: userId)
+        .where('fecha', isGreaterThan: date)
+        .get();
+    return movements.docs
+        .map((doc) => doc.data()['descripcion'].toString())
+        .toList();
+  } catch (error) {
+    throw Exception('Error al obtener los movimientos: $error');
+  }
+}
+
 Future<List<Room>> getRooms() async {
   try {
     final rooms = await FirebaseFirestore.instance.collection('habitaciones').get();

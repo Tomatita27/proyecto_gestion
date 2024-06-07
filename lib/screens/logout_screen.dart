@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:proyecto_gestion/data/app_user.dart';
+import 'package:proyecto_gestion/data/firebase_operations.dart';
 
 class LogoutScreen extends StatelessWidget {
   // final bool isEmployee; // Nueva propiedad para determinar si es empleado o jefa
   final AppUser user;
+  final List<String> movements;
 
-  const LogoutScreen({super.key, required this.user});
+  const LogoutScreen({super.key, required this.user, required this.movements});
 
   @override
   Widget build(BuildContext context) {
@@ -84,37 +86,22 @@ class LogoutScreen extends StatelessWidget {
             ),
           ),
           const Divider(thickness: 2),
-          const Padding(
-            padding: EdgeInsets.all(16.0),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'HISTORIAL DE MOVIMIENTOS:',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Text(
-                  'Realizo cambio de inventario: Habitación Individual Número 120',
-                  style: TextStyle(fontSize: 18),
+                  movements.join('\n'),
+                  style: const TextStyle(fontSize: 18),
                 ),
-                SizedBox(height: 5),
-                Text(
-                  'Realizo cambio de inventario: Habitación Doble Número 101',
-                  style: TextStyle(fontSize: 18),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  'Realizo cambio de inventario: Habitación Familiar Número 202',
-                  style: TextStyle(fontSize: 18),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  'Realizo cambio de inventario: Habitación Suite Número 303',
-                  style: TextStyle(fontSize: 18),
-                ),
-                SizedBox(height: 20),
-                Center(
+                const SizedBox(height: 20),
+                const Center(
                   child: Text(
                     'INFORMACIÓN GUARDADA',
                     style: TextStyle(

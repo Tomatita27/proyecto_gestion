@@ -94,11 +94,13 @@ class _InventoryScreenState extends State<InventoryScreen> {
               child: const Text('Cancelar'),
             ),
             TextButton(
-              onPressed: () async {
+              onPressed: () {
                 String note = noteController.text.trim();
                 if (note.isNotEmpty) {
                   try {
-                    await addNote(widget.room.id, widget.room.number, note, productId, productName, Timestamp.now());
+                    Timestamp date = Timestamp.now();
+                    addNote(widget.room.id, widget.room.number, note, productId, productName, date);
+                    addMovement(widget.user.id, 'Agregó una nota en la habitación ${widget.room.type} - Número ${widget.room.number}', date);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Nota agregada correctamente')),
                     );
@@ -143,11 +145,13 @@ class _InventoryScreenState extends State<InventoryScreen> {
               child: const Text('Cancelar'),
             ),
             TextButton(
-              onPressed: () async {
+              onPressed: () {
                 String incident = incidentController.text.trim();
                 if (incident.isNotEmpty) {
                   try {
-                    await addIncident(widget.room.id, widget.room.number, incident, Timestamp.now());
+                    Timestamp date = Timestamp.now();
+                    addIncident(widget.room.id, widget.room.number, incident, date);
+                    addMovement(widget.user.id, 'Reportó un incidente en la habitación ${widget.room.type} - Número ${widget.room.number}', date);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Incidente reportado correctamente')),
                     );
@@ -210,12 +214,12 @@ class _InventoryScreenState extends State<InventoryScreen> {
               child: const Text('Cancelar'),
             ),
             TextButton(
-              onPressed: () async {
+              onPressed: () {
                 String productName = productNameController.text.trim();
                 String quantity = quantityController.text.trim();
                 String imagePath = imageController.text.trim();
 
-                await addProductToRoom(widget.room.id, productName, int.parse(quantity), imagePath).then((_) {
+                addProductToRoom(widget.room.id, productName, int.parse(quantity), imagePath).then((_) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Producto $productName agregado correctamente')),
                   );
@@ -389,6 +393,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
             ),
           ),
           const Divider(thickness: 2),
+          if (widget.user.isBoss) 
           ElevatedButton(
             onPressed: () {
               List<Product> productList = [];
@@ -397,6 +402,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                   productList.add(Product(id: product.id, name: product.name, imageRoute: product.imageRoute, quantity: int.parse(_quantityControllers[product.id]?.text ?? '0')));
                 }
                 updateProductsQuantity(productList, widget.room.id);
+                addMovement(widget.user.id, 'Realizó cambios en el inventario de la habitación ${widget.room.type} - Número ${widget.room.number}', Timestamp.now());
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Productos guardados correctamente')),
                 );
@@ -435,11 +441,12 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 ),
                 const SizedBox(width: 16),
                 GestureDetector(
-                  onTap: () {
+                  onTap: () async {
+                    var movements = await getMovements(widget.user.id, widget.user.lastLogin!);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => LogoutScreen(user: widget.user),
+                        builder: (context) => LogoutScreen(user: widget.user, movements: movements),
                       ),
                     );
                   },

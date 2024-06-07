@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class AppUser {
   final String id;
   final String email;
@@ -5,6 +7,7 @@ class AppUser {
   final String lastName;
   final String photoRoute;
   final bool isBoss;
+  Timestamp? lastLogin;
 
   AppUser(
       {required this.id,

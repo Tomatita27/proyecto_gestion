@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
@@ -31,14 +32,14 @@ class _LoginScreenState extends State<LoginScreen> {
   void _translateAndShowAuthError(FirebaseAuthException e) {
     String message;
     switch (e.code) {
-      case 'user-not-found':
-        message = 'Correo no existe.';
-        break;
-      case 'wrong-password':
-        message = 'Contraseña incorrecta.';
-        break;
       case 'invalid-email':
-        message = 'Correo no es válido.';
+        message = 'Correo no válido.';
+        break;
+      case 'invalid-credential':
+        message = 'Correo o contraseña incorrectos.';
+        break;
+      case 'too-many-requests':
+        message = 'Demasiados intentos. Por favor, inténtalo más tarde.';
         break;
       case 'user-disabled':
         message = 'Usuario está deshabilitado.';
@@ -152,6 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       String userId = userCredential.user!.uid;
                       AppUser user = await getUser(userId);
+                      user.lastLogin = Timestamp.fromDate(userCredential.user!.metadata.lastSignInTime!);
 
                       Navigator.push(
                         context,
