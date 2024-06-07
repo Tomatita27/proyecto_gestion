@@ -41,6 +41,8 @@ class InventoryScreen extends StatefulWidget {
 
 class _InventoryScreenState extends State<InventoryScreen> {
   late Map<String, TextEditingController> _quantityControllers;
+  TextEditingController _searchController = TextEditingController();
+  List<Product> _filteredProducts = [];
 
   @override
   void initState() {
@@ -49,6 +51,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
       for (var product in widget.room.products ?? [])
         product.id: TextEditingController(text: product.quantity.toString())
     };
+    _filteredProducts = widget.room.products ?? [];
+    _searchController.addListener(_filterProducts);
   }
 
   @override
@@ -56,7 +60,18 @@ class _InventoryScreenState extends State<InventoryScreen> {
     for (var controller in _quantityControllers.values) {
       controller.dispose();
     }
+    _searchController.dispose();
     super.dispose();
+  }
+
+  void _filterProducts() {
+    setState(() {
+      String searchQuery = _searchController.text.toLowerCase();
+      _filteredProducts = widget.room.products!
+          .where((product) =>
+              product.name.toLowerCase().contains(searchQuery))
+          .toList();
+    });
   }
 
   void _showAddNoteDialog(BuildContext context, String productId, String productName) {
@@ -131,12 +146,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
               onPressed: () async {
                 String incident = incidentController.text.trim();
                 if (incident.isNotEmpty) {
-                  // // Guardar el incidente en Firestore
-                  // FirebaseFirestore.instance.collection('incidentes').add({
-                  //   'descripcion': incident,
-                  //   'fecha': Timestamp.now(),
-                  // });
-
                   try {
                     await addIncident(widget.room.id, widget.room.number, incident, Timestamp.now());
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -352,24 +361,34 @@ class _InventoryScreenState extends State<InventoryScreen> {
       body: Column(
         children: [
           const Divider(thickness: 2),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: const InputDecoration(
+                labelText: 'Buscar Producto',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.search),
+              ),
+            ),
+          ),
           const SizedBox(height: 30.0),
           Expanded(
             child: GridView.count(
               crossAxisCount: 2,
-              children: widget.room.products
-                      ?.map((product) => _buildProductCard(
-                          product.id,
-                          product.name,
-                          product.imageRoute,
-                          product.quantity.toString(),
-                          context,
-                          !widget.user.isBoss))
-                      .toList() ??
-                  [],
+              children: _filteredProducts
+                  .map((product) => _buildProductCard(
+                        product.id,
+                        product.name,
+                        product.imageRoute,
+                        product.quantity.toString(),
+                        context,
+                        !widget.user.isBoss,
+                      ))
+                  .toList(),
             ),
           ),
           const Divider(thickness: 2),
-          // const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
               List<Product> productList = [];
@@ -394,7 +413,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
             ),
             child: const Text('Guardar Cantidades'),
           ),
-          // const SizedBox(height: 20),
           const SizedBox(height: 20),
           Container(
             color: const Color.fromARGB(255, 103, 74, 239),
