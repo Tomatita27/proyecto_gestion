@@ -6,6 +6,7 @@ import 'package:proyecto_gestion/data/firebase_operations.dart';
 import 'roomtype_screen.dart';
 import 'qr_scan_page.dart';
 
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -15,15 +16,50 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   // Controladores para los campos de id y contraseña
-  final _idController = TextEditingController(); 
+  final _idController = TextEditingController();
   final _passwordController = TextEditingController();
-  //variable para almacenar errores de id
+  // Variables para almacenar errores de id y autenticación
   String _idError = '';
+  String _authError = '';
 
   void _validateId() {
     setState(() {
       _idError = _idController.text.isEmpty ? 'ID no existe' : '';
     });
+  }
+
+  void _translateAndShowAuthError(FirebaseAuthException e) {
+    String message;
+    switch (e.code) {
+      case 'user-not-found':
+        message = 'Correo no existe.';
+        break;
+      case 'wrong-password':
+        message = 'Contraseña incorrecta.';
+        break;
+      case 'invalid-email':
+        message = 'Correo no es válido.';
+        break;
+      case 'user-disabled':
+        message = 'Usuario está deshabilitado.';
+        break;
+      default:
+        message = 'Error desconocido. Por favor, inténtalo de nuevo.';
+    }
+
+    setState(() {
+      _authError = message;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   @override
@@ -46,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         // Centra el título en la AppBar
-        centerTitle: true, 
+        centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 103, 74, 239),
         foregroundColor: Colors.black,
         elevation: 0,
@@ -91,8 +127,21 @@ class _LoginScreenState extends State<LoginScreen> {
             Center(
               child: ElevatedButton(
                 onPressed: () async {
-                  if (_idController.text.isNotEmpty &&
-                      _passwordController.text.isNotEmpty) {
+                  bool isValid = true;
+
+                  if (_idController.text.isEmpty) {
+                    setState(() {
+                      _idError = 'ID no existe';
+                    });
+                    isValid = false;
+                  }
+
+                  if (_passwordController.text.isEmpty) {
+                    _showMessage('Por favor ingresa tu contraseña');
+                    isValid = false;
+                  }
+
+                  if (isValid) {
                     try {
                       UserCredential userCredential = await FirebaseAuth
                           .instance
@@ -107,23 +156,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => RoomType(
-                                user: user,
-                                // isEmployee: userType == 'Empleado',
-                                // userType: userType
-                                )),
+                          builder: (context) => RoomType(user: user),
+                        ),
                       );
                     } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error de autenticación: $e')),
-                      );
-                    }
-                  } else {
-                    setState(() {
-                      if (_idController.text.isEmpty) {
-                        _idError = 'ID no existe';
+                      if (e is FirebaseAuthException) {
+                        _translateAndShowAuthError(e);
+                      } else {
+                        _showMessage('Error desconocido: $e');
                       }
-                    });
+                    }
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -163,6 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   );
                   if (qrCode != null) {
                     _idController.text = qrCode;
+                    _showMessage('QR escaneado correctamente');
                   }
                 },
                 style: ElevatedButton.styleFrom(
